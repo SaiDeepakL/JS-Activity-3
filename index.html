@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Match Summary</title>
+</head>
+<body style="background-color: LemonChiffon;">
+<div>
+  <h2>Match Summary</h2>
+</div>
+<div style="display:flex;align-items:flex-end;">
+  <span>Team A</span><span style="color:red">*</span>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="text" id="teamAName" placeholder="Team A"/>
+</div>
+<br/>
+<div style="display:flex;align-items:flex-end;">
+<span>Team B</span><span style="color:red">*</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="text" id="teamBName" placeholder="Team B"/>
+</div>
+<br/>
+<div style="display:flex;align-items:flex-end;">
+<span>Date</span><span style="color:red">*</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="text" id="matchDate" placeholder="DD/MM/YYYY"/>
+</div>
+<br/>
+<div style="display:flex;align-items:flex-end;">
+<span>Time</span><span style="color:red">*</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="text" id="matchTime" placeholder="HH:MM:SS"/>
+</div>
+<br/>
+<div style="display:flex;align-items:flex-end;">
+<span>Team A Score</span><span style="color:red">*</span>
+&nbsp;&nbsp;
+<input type="text" id="teamAScore" placeholder="Runs/Wkts"/>
+</div>
+<br/>
+<div style="display:flex;align-items:flex-end;">
+<span>Team B Score</span><span style="color:red">*</span>
+&nbsp;&nbsp;
+<input type="text" id="teamBScore" placeholder="Runs/Wkts"/>
+</div>
+<br/>
+<br/>
+<button onclick="save()"> Save </button>
+<div style="display:flex;align-items:flex-end;">
+  <h3>Winning Team: <span id="resultText"></span></h3>
+</div>
+
+<script>
+    var teamAName = document.getElementById('teamAName'),
+    teamBName = document.getElementById('teamBName'),
+    matchDate = document.getElementById('matchDate'),
+    matchTime = document.getElementById('matchTime'),
+    teamAScore = document.getElementById('teamAScore'),
+    teamBScore = document.getElementById('teamBScore'),    
+    resultText = document.getElementById('resultText');
+
+    function save()
+    {
+      let validTeamAName=false, validTeamBName=false,validTeamAScore=false, validTeamBScore=false,
+      validDate=false, validTime=false;
+
+      if(teamAName.value== "" || teamBName.value == "" ||matchDate.value =="" || matchTime.value == "" || teamAScore.value == "" || teamBScore.value == "")
+      {
+        resultText.innerHTML=`<h3>Fill the fields required</h3>`;
+      }
+      else if(/\s/.test(matchDate.value)){
+        resultText.innerHTML=`<h3>Please fill matchDate without spaces</h3>`;
+      }
+      else if(/\s/.test(matchTime.value)){
+        resultText.innerHTML=`<h3>Please fill matchTime without spaces</h3>`;
+      }
+      else if(/\s/.test(teamAScore.value)){
+        resultText.innerHTML=`<h3>Please fill team A score without spaces</h3>`;
+      }
+      else if(/\s/.test(teamBScore.value)){
+        resultText.innerHTML=`<h3>Please fill team B score without spaces</h3>`;
+      }
+      else{
+        validTeamAName= validateTeamNames(teamAName.value);
+        validTeamBName= validateTeamNames(teamBName.value);
+        let runwicketA=teamAScore.value.split('/',2);
+        let runwicketB=teamBScore.value.split('/',2);
+        validTeamAScore=validateRunsWickets(runwicketA[0],runwicketA[1]);
+        validTeamBScore=validateRunsWickets(runwicketB[0],runwicketB[1]);
+        validDate=validateDate(matchDate.value);
+        validTime=validateTime(matchTime.value);
+        if(validTeamAName ==true && validTeamBName ==true && validTeamAScore==true && validTeamBScore == true && validDate== true && validTime == true)
+        {
+            if(runwicketA[0]==runwicketB[0]){
+              resultText.innerHTML=`<h2>Match is drawn</h2>`;
+            }
+            else if(runwicketA[0]>runwicketB[0]){
+              resultText.innerHTML=teamAName.value;
+            }
+            else{
+              resultText.innerHTML=teamBName.value;
+            }
+
+          }
+      }
+      
+    }
+
+    function validateTime(time)
+    {
+      let timeFormat= /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])(:[0-5][0-9])?$/;
+
+      if(time.match(timeFormat)){
+        return true;
+      }
+      else{
+        resultText.innerHTML=`<h3>Please a valid time</h3>`;
+        return false;
+      }
+    }
+
+    function validateDate(date)
+    {
+      let dateFormat= /^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/;
+
+      if(date.match(dateFormat)){
+        return true;
+      }
+      else{
+        resultText.innerHTML=`<h3>Please a valid date</h3>`;
+        return false;
+      }
+    }
+
+    function validateTeamNames(teamName)
+    {
+      let letters = /^[A-Za-z]+$/;
+      if(teamName.match(letters)){
+        if(teamName.length <51){
+          return true;
+        }
+        else{
+          resultText.innerHTML=`<h3>Please input characters less than equal to 50</h3>`;
+          return false;
+        }
+        
+      }
+      else{
+        resultText.innerHTML=`<h3>Please input alphabet characters only</h3>`;
+        return false;
+      }
+    }
+
+    function validateRunsWickets(runs,wickets)
+    {
+      let threeDigitNums= /^[0-9]{3}$/, twoDigitNums= /^[0-9]{2}$/
+      ,singleDigitNum= /^[0-9]{1}$/;
+      if(runs.match(threeDigitNums) || runs.match(twoDigitNums))
+      {
+        if(wickets.match(singleDigitNum) || wickets == '10')
+        {
+          return true;
+        }
+        else
+        {
+          resultText.innerHTML=`<h3>Please enter valid no. of wickets</h3>`;
+          return false;
+        }
+      }
+      else
+      {
+        resultText.innerHTML=`<h3>Please enter valid no. of runs</h3>`;
+        return false;
+      }
+    }
+</script>
+
+</body>
+</html>
